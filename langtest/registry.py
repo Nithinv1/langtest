@@ -5,25 +5,30 @@ from collections import defaultdict
 class Registry:
     """Registry class to store test classes."""
 
-    registry = defaultdict(lambda: list)
+    registry = defaultdict(list)
+
+    def __new__(cls):
+        """Singleton instance of the Registry class."""
+        if not hasattr(cls, "instance"):
+            cls.instance = super(Registry, cls).__new__(cls)
+        return cls.instance
 
     @classmethod
     def test_info(cls, domain, category, test_type, description, langtest_version):
         """Decorator to register test classes."""
 
         def decorator(test_cls):
-            @functools.wraps(test_cls)
-            def wrapper(*args, **kwargs):
-                cls.registry["test_types"] = {
+            Registry.registry["test_types"].append(
+                {
                     "domain": domain,
                     "category": category,
                     "test_type": test_type,
                     "description": description,
                     "langtest_version": langtest_version,
                 }
-                return test_cls(*args, **kwargs)
+            )
 
-            return wrapper
+            return test_cls
 
         return decorator
 
@@ -32,16 +37,15 @@ class Registry:
         """Decorator to register category info."""
 
         def decorator(test_class):
-            @functools.wraps(test_class)
-            def wrapper(*args, **kwargs):
-                cls.registry["test_categories"] = {
+            Registry.registry["categories"].append(
+                {
                     "title": title,
                     "name": name,
                     "description": description,
-                    "class": test_class.__qualname__,
+                    "class": f"{test_class.__module__}.{test_class.__qualname__}",
                 }
-                return test_class(*args, **kwargs)
+            )
 
-            return wrapper
+            return test_class
 
         return decorator

@@ -32,13 +32,18 @@ from ..utils.SoundsLikeFunctions import Search
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord
 from collections import defaultdict
-
+from langtest.registry import Registry
 
 inverted_ocr_typo_dict = defaultdict(list)
 for k, v in ocr_typo_dict.items():
     inverted_ocr_typo_dict[v].append(k)
 
 
+@Registry.category_info(
+    title="Robustness",
+    name="robustness",
+    description="Robustness tests check whether a model's predictions are stable under small perturbations of the input.",
+)
 class RobustnessTestFactory(ITests):
     """
     A class for performing robustness tests on a given dataset.
