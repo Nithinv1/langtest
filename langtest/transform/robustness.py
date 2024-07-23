@@ -264,7 +264,7 @@ class RobustnessTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> dict:
+    def available_tests() -> Dict[str, "BaseRobustness"]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -298,6 +298,7 @@ class BaseRobustness(ABC):
         "summarization",
         "translation",
     ]
+    domain = "general"
 
     @staticmethod
     @abstractmethod
@@ -362,6 +363,26 @@ class BaseRobustness(ABC):
         alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
         for name in alias:
             BaseRobustness.test_types[name] = cls
+
+    @classmethod
+    def info(cls):
+        """Returns the information about the test."""
+        if isinstance(cls.alias_name, list):
+            return [
+                {
+                    "domain": cls.domain,
+                    "category": "robustness",
+                    "test_type": alias_name,
+                    "description": cls.__doc__,
+                }
+                for alias_name in cls.alias_name
+            ]
+        return {
+            "domain": cls.domain,
+            "category": "robustness",
+            "test_type": cls.alias_name,
+            "description": cls.__doc__,
+        }
 
 
 class UpperCase(BaseRobustness):
