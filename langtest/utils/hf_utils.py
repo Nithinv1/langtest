@@ -73,6 +73,12 @@ def login_with_token():
             from huggingface_hub import login
 
             login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
+
+        except ValueError:
+            raise ValueError(
+                "Please check the value of the 'HUGGINGFACEHUB_API_TOKEN' environment variable."
+            )
+
         except ImportError:
             pass
 
