@@ -6,7 +6,7 @@ class SafetyEval:
 
     def __init__(
         self,
-        model_name: str = "meta/llamagurad-2",
+        model_name: str = "meta-llama/Llama-Guard-3-8B-INT8",
         hub: str = "huggingface",
         model_kwargs: Dict[str, str] = None,
     ) -> None:
@@ -22,16 +22,15 @@ class SafetyEval:
 
         if self.hub == "huggingface":
             from transformers import pipeline
-            pipeline = pipeline("question-answering", model=model, **self.model_kwargs)
-            return pipeline
+
+            pipe = pipeline("text-generation", model=self.model_name, **self.model_kwargs)
+            return pipe
         else:
-            from langtest.tasks import TaskManager 
+            from langtest.tasks import TaskManager
 
             task = TaskManager("question-answering")
             model = task.model(self.model_name, self.hub)
             return model.predict
-
-
 
     def evaluate_reponse(self, response: str) -> str:
         return response
